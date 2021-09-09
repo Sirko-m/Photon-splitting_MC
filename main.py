@@ -6,7 +6,7 @@ import numpy
 
 e = math.e
 pi = math.pi
-h_dash = 6.582119569*10**(-16) / 0.51 #Blanc constans in m_ec^2 (I think)
+h_dash = 6.582119569*10**(-16) / 510 #Blanc constans in m_ec^2 (I think) #There was mistake in this line before
 
 #parameters
 B_cr = 4.41 * 10**13 #critical quantum value
@@ -38,9 +38,16 @@ def get_rand_pol(): #random polarization
         return 0
 
 def get_rand_energy(minimum, maximum):
-    range = maximum - minimum
+    size = maximum - minimum
+    u = random.uniform(0,1)
+    return e_min + size*u
+
+def power_law_distribution(N_0, minimum, maximum):
+    size = maximum - minimum
     rand = random.uniform(0,1)
-    return e_min + range*rand
+    u = e_min + size*rand
+    return (u/N_0)**(1/alpha)
+
 
 class Photon:
     def __init__(self, pol, energy):
@@ -49,7 +56,6 @@ class Photon:
 
     def energy_to_omega(self, energy):
         return energy/h_dash
-
 
 def main():
     for in range(N_0):
