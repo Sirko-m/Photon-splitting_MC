@@ -1,0 +1,38 @@
+Proposition of plan of simulation code (based on https://iopscience.iop.org/article/10.1086/303605/pdf)
+
+(Setting simulation parameters, calculating the pulsar magnetic field)
+1a. Set values of simulation parameters:
+	magnetic colatitude phi, 
+	the angles phi_k (angle between phi and photon momentum vector), theta_k, 
+	the height of the photon emission above the surface z_0, 
+	the pulsar surface magnetic field strength B_0,
+	and some other simulation parameters such as time step, we will figure it out later.
+
+1b. Calculate the magnetic field vectors values in space around the pulsar (in either flat or curved spacetime, 
+	we can do both to compare the results) in the X-Z plane.
+
+1c. Store the values in some 2D array (I'm not sure what python equivalent is), 
+	so we can just use them instead of performing calculations every time we need them 
+	(the assumption there is that the magnetic field of pulsar is a constant vector field).
+
+
+(Simulation main loop, with multiple photons)
+2a. Inject photon with random energy epsilon (Eq. 12 - power-law distribution) and associate it with: 
+	random polarization value alpha,
+	random numbers r_1 and r_2, where 0 < r_1, r_2 < 1.
+
+2b. Change photon position and momentum 4-vector (see Appendix), independently calculating survival probabilities for splitting and pair production 
+(Eq. 13 and 14 - P_surv_s and P_surv_p, respectively).
+
+2c. If P_surv_s*P_surv_p > r_1, then the photon escapes (we store its energy in external file).
+	If not, then if P_surv_s*(1 - P_surv_p) / (1 - P_surv_s*P_surv_p) > r_2, then the photon produces a pair (and we get back to 2a)
+	If not, then the photon splits:
+		We sample the energy (omega_1) of one of them from distribution described by Eq. 1 and 2 
+		(omega is the original photon energy) and (somehow - need to figure it out) get polarization from Eq. 3
+		The second photon's energy is equal to omega_2 = epsilon - omega_1, and I'm not sure what polarization it gets.
+	Then we treat both photons just like they were injected in 2a - in the next steps we change their positions, momentum, survival probability etc.
+
+
+(Simulation termination condition, saving results)
+3. If there are any photons left, get back to 2a, 
+	otherwise terminate the simulation and save the results.
